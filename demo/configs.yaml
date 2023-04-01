@@ -1,0 +1,14 @@
+generator:
+    input_nc: 5
+    output_nc: 3
+    ngf: 64
+    n_downsampling: 3
+    n_blocks: 9
+    norm_layer: 'bn'
+    activation: 'relu'
+    padding_mode: 'reflect'
+    out_act: 'tanh'
+    max_features: 512
+    nc_reduce: 2  #big 1, base 2, slim 4, xs 8
+    selected_edge_layers: ['edge_de_l0','edge_de_l1','edge_de_l2']
+    selected_gt_layers: ['de_l0','de_l1','de_l2']

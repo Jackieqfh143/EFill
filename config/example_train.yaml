@@ -1,0 +1,116 @@
+mode: 1             # 1: distill training inpainting model ; 2: training dual Teacher
+description: ''
+restore_training: false  #restore from the last training stage
+datasetName: Celeba-HQ
+Generator: DistInpaintModel_SPADE_IN_LFFC_Base_concat_WithAtt   #set to Teacher_concat_WithAtt for mode=2
+Discriminator: MultidilatedNLayerDiscriminatorWithAtt
+ST_Teacher: Teacher_concat_WithAtt
+train_dataDir: /data1/qfh/data/celeba-hq/train_256
+val_dataDir: /data1/qfh/data/celeba-hq/real_imgs
+maskDir: /data1/qfh/data/mask/testing_mask_dataset
+val_maskDir: /data1/qfh/data/celeba-hq/masks
+lossNetDir: ./checkpoints
+st_TeacherPath: ./checkpoints/celeba-hq_latest.pth
+loss_type : 'seg'       # seg/vgg  The pretrained network to calculate perceptual loss
+saveDir : './checkpoints'
+saveName: ''
+log_path : './log'
+val_saveDir : './results'
+gpuIDs:        #indicate different GPU device for training
+- 0
+- 1
+num_workers: 8
+val_step: 1200       #the frequent of validating and saving models
+max_val_batches : 1000 #the maximum validate batches each time
+targetSize : 256
+is_training : True  #remove the co-learning branch when set to false
+center_crop: false
+batchSize : 12
+val_batchSize: 10
+maskType : 0        #'mask type: 0-external masks(random),  1-random free-form,  2-random square,  3-external masks(fixed),4-segmentation')
+val_maskType : 3
+lr : 0.0006
+max_iter : 300000
+iteration: 0
+gan_loss_type: 'R1'
+use_sigmoid: false #set to false when using hinge/softplus/MSE as gan loss
+load_last: true    #whether resume training from the last checkpoint
+load_from_iter:
+edge_type: 'sobel' #canny/sobel for calculate the structral image
+debug: false
+seed: 2022   #random seed
+enable_teacher: true
+enable_ema: false
+lr_decrease: false
+
+
+
+
+#log args
+print_loss_step: 50
+save_im_step: 1000
+record_training_imgs: false #whether to record the training images in tensorboard
+record_val_imgs: false      #whether to record the validate images in tensorboard
+
+#optimizer args
+beta_g_min: 0.5
+beta_g_max: 0.9
+beta_d_min: 0
+beta_d_max: 0.9
+d_lr : 0.00006
+lr_steps: 4      #minimum training steps before adjust the learning rate
+lr_factor: 0.9  #learning rate dropping factor
+
+#loss args
+rec_loss: True
+perc_loss: True
+gan_loss: False
+feat_mat: True
+feat_mat_loss_type: 'l1_mask'
+lambda_gen: 4
+lambda_hole: 6
+lambda_valid: 2
+lambda_perc: 4
+lambda_feat_mat: 4
+lambda_dist_gt_feat: 3
+lambda_dist_edge_feat: 3
+lambda_r1: 0.001
+
+#other tricks
+use_grad_norm: false
+max_grad_norm: 11
+grad_norm_type: 2
+min_lr: 0.0001
+min_d_lr: 0.00001
+acc_steps: 4        #gradient accumalation steps
+
+#generator args
+generator:
+    input_nc: 5
+    output_nc: 3
+    ngf: 64
+    n_downsampling: 3
+    n_blocks: 9
+    norm_layer: 'bn'
+    activation: 'relu'
+    padding_mode: 'reflect'
+    out_act: 'tanh'
+    max_features: 512
+    nc_reduce: 2  #big 1, base 2, slim 4, xs 8
+    selected_edge_layers: ['edge_de_l0','edge_de_l1','edge_de_l2']
+    selected_gt_layers: ['de_l0','de_l1','de_l2']
+
+stGNet:
+    input_nc: 4
+    output_nc: 3
+    ngf: 64
+    n_downsampling: 3
+    n_blocks: 9
+    norm_layer: 'bn'
+    activation: 'relu'
+    padding_mode: 'reflect'
+    out_act: 'tanh'
+    max_features: 512
+    nc_reduce: 2  #big 1, base 2, slim 4, xs 8
+    selected_edge_layers: ['edge_de_l0','edge_de_l1','edge_de_l2']
+    selected_gt_layers: ['de_l0','de_l1','de_l2']
