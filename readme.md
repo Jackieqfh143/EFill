@@ -8,11 +8,22 @@
 
 ## Set up
 
+### Conda (For GPU)
+
 ```shell
 conda create -n efill python=3.7 
 conda activate efill 
 conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 cudatoolkit=10.2 -c pytorch
-pip install -r requirements.txt  
+pip install -r requirements.txt
+```
+
+### pip (CPU only)
+
+```shell
+python -m venv efill
+efill\Scripts\activate
+pip install torch==1.12.1+cpu torchvision==0.13.1+cpu torchaudio==0.12.1 --extra-index-url https://download.pytorch.org/whl/cpu
+pip install -r requirements.txt
 ```
 
 ## Pretrained Models
