@@ -139,7 +139,7 @@ python performance.py \
 
 # Acknowledgement
 
-Our code is built upon the following repository:
+Our code is built upon the following repositories:
 
 -  LaMa https://github.com/advimman/lama
 -  CrFill https://github.com/zengxianyu/crfill
