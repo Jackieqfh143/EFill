@@ -13,11 +13,11 @@ import torch
 import argparse
 
 parse = argparse.ArgumentParser()
-parse.add_argument('--port',type=int,dest='port',default=8000,help='path to the config file')
+parse.add_argument('--port',type=int,dest='port',default=8000,help='')
+parse.add_argument('--model_path',type=str,dest='port',default="../checkpoints/place_best.pth",help='path to model checkpoints')
+parse.add_argument('--config_path',type=str,dest='port',default="../config/configs.yaml",help='path to model config')
 opt = parse.parse_args()
 
-model_path = '../checkpoints/place_best.pth'
-config_path = './configs.yaml'
 
 max_size = 512
 max_num_examples = 50
@@ -54,7 +54,7 @@ def process_image(img, mask, name, opt, save_to_input=True):
         mask = np.expand_dims(mask, axis=-1)
         mask = np.concatenate((mask, mask, mask), axis=-1)
     mask = mask.astype(np.uint8)
-    model = InpaintingModel(model_path=model_path, config_path=config_path)
+    model = InpaintingModel(model_path=opt.model_path, config_path=opt.config_path)
     result = model(img,mask)  #inpainting process
 
     result = Image.fromarray(result).resize((w_raw, h_raw))
