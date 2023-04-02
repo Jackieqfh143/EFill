@@ -45,7 +45,7 @@ Then, click on the link that pops up below. For example
 
 http://127.0.0.1:8000
 
-<img src="imgbed/20230402_042447.gif" style="zoom:80%;" />
+<img src="./demo/static/demo.gif" style="zoom:80%;" />
 
 # Training
 
