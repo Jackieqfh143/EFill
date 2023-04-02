@@ -5,6 +5,11 @@ from collections import OrderedDict
 from im_process import *
 from PIL import Image
 import torchvision.transforms.functional as F
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from modules.models import DistInpaintModel_SPADE_IN_LFFC_Base_concat_WithAtt as EFill
 
 class InpaintingModel(nn.Module):

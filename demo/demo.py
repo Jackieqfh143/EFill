@@ -12,11 +12,15 @@ import time
 import torch
 import argparse
 
+import sys
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 parse = argparse.ArgumentParser()
 parse.add_argument('--port',type=int,dest='port',default=8000,help='')
-parse.add_argument('--model_path',type=str,dest='port',default="../checkpoints/place_best.pth",help='path to model checkpoints')
-parse.add_argument('--config_path',type=str,dest='port',default="../config/configs.yaml",help='path to model config')
-opt = parse.parse_args()
+parse.add_argument('--model_path',type=str,dest='model_path',default="../checkpoints/place_best.pth",help='path to model checkpoints')
+parse.add_argument('--config_path',type=str,dest='config_path',default="../config/configs.yaml",help='path to model config')
+arg = parse.parse_args()
 
 
 max_size = 512
@@ -31,8 +35,6 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
-port = opt.port
-
 def load_img(path):
     image = Image.open(path)
     W, H = image.size
@@ -41,6 +43,7 @@ def load_img(path):
         W = int(W * ratio)
         H = int(H * ratio)
         image = image.resize((W, H))
+        return image
 
     return image
 
@@ -54,7 +57,7 @@ def process_image(img, mask, name, opt, save_to_input=True):
         mask = np.expand_dims(mask, axis=-1)
         mask = np.concatenate((mask, mask, mask), axis=-1)
     mask = mask.astype(np.uint8)
-    model = InpaintingModel(model_path=opt.model_path, config_path=opt.config_path)
+    model = InpaintingModel(model_path=arg.model_path, config_path=arg.config_path)
     result = model(img,mask)  #inpainting process
 
     result = Image.fromarray(result).resize((w_raw, h_raw))
@@ -69,34 +72,41 @@ def process_image(img, mask, name, opt, save_to_input=True):
 @app.route('/', methods=['GET', 'POST'])
 def hello(name=None):
     global filename,origin_imgName
-    if 'example' in request.form:
-        filename= request.form['example']
-        origin_imgName = filename
-        image = load_img(os.path.join(os.path.join(app.config['UPLOAD_FOLDER'], filename)))
-        W, H = image.size
-        return render_template('Inpainting.html', name=name, origin_imgName = origin_imgName,image_name=filename, image_width=W,
-                image_height=H,list_examples=list_examples)
+    # if 'example' in request.form:
+    #     filename = request.form['example']
+    #     origin_imgName = filename
+    #     image = load_img(os.path.join(os.path.join(app.config['UPLOAD_FOLDER'], filename)))
+    #     filename = "input_" + filename
+    #     image.save(os.path.join(os.path.join(app.config['UPLOAD_FOLDER'], filename)))
+    #     W, H = image.size
+    #     return render_template('Inpainting.html', name=name, origin_imgName = origin_imgName,image_name=filename, image_width=W,
+    #             image_height=H,list_examples=list_examples)
+
+
     if request.method == 'POST':
         if 'file' in request.files:
             file = request.files['file']
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
+                origin_imgName = "ori_" + filename
                 image = load_img(file)
                 W, H = image.size
-                filename = "resize_"+filename
-                origin_imgName = "resize_"+filename
+                filename = "resize_" + filename
+                image.save(os.path.join(os.path.join(app.config['UPLOAD_FOLDER'], origin_imgName)))
                 image.save(os.path.join(os.path.join(app.config['UPLOAD_FOLDER'], filename)))
                 return render_template('Inpainting.html', name=name, origin_imgName = origin_imgName, image_name=filename, image_width=W,
                         image_height=H,list_examples=list_examples)
             else:
-                filename=list_examples[0]
+                filename = list_examples[0]
+                origin_imgName = filename
                 image = load_img(os.path.join(os.path.join(app.config['UPLOAD_FOLDER'], filename)))
+                filename = "input_" + filename
+                image.save(os.path.join(os.path.join(app.config['UPLOAD_FOLDER'], filename)))
                 W, H = image.size
                 return render_template('Inpainting.html', name=name, origin_imgName = origin_imgName,image_name=filename, image_width=W, image_height=H,
                         is_alert=True,list_examples=list_examples)
 
         if 'mask' in request.form:
-            # filename = request.form['imgname']
             mask_data = request.form['mask']
             mask_data = mask_data.replace('data:image/png;base64,', '')
             mask_data = mask_data.replace(' ', '+')
@@ -119,13 +129,18 @@ def hello(name=None):
         filename = list_examples[0]
         origin_imgName = filename
         image = load_img(os.path.join(os.path.join(app.config['UPLOAD_FOLDER'], filename)))
+        filename = "input_" + filename
+        image.save(os.path.join(os.path.join(app.config['UPLOAD_FOLDER'], filename)))
         W, H = image.size
-        return render_template('Inpainting.html', name=name, origin_imgName = origin_imgName,image_name=filename, image_width=W, image_height=H,
+        return render_template('Inpainting.html', name=name, origin_imgName = origin_imgName,image_name=filename,
+                               image_width=W, image_height=H,
                 list_examples=list_examples)
 
 
 
 if __name__ == "__main__":
     list_examples = sorted(glob.glob(UPLOAD_FOLDER + '/*.jpg'))
-    list_examples = [item.replace(UPLOAD_FOLDER+'/', '') for item in list_examples]
-    app.run(host='0.0.0.0', debug=True, port=port, threaded=True) #run with flask
+    list_examples = [os.path.split(item)[-1] for item in list_examples]
+
+    print(list_examples)
+    app.run(host='0.0.0.0', debug=True, port=arg.port, threaded=True) #run with flask
