@@ -61,7 +61,7 @@ Please refer to this link [lama](https://github.com/advimman/lama) for download 
    sh prepare.sh 
    ```
 
-4. download the pretraned teacher models (**Recommend**)
+4. download the pretrained teacher models (**Recommend**)
 
 ​		[Place](https://drive.google.com/file/d/1iGq7CSaZwLh6ndKg6dPrSgGEWj8-3TNg/view?usp=share_link)   [Celeba-HQ](https://drive.google.com/file/d/1-dHy9Es1wBM5j3kaxiPj7u30YabwnF0i/view?usp=share_link)   [Celeba](https://drive.google.com/file/d/1VqabXkPNr2OostmcY9Yv2JGwTrLysOn7/view?usp=share_link)
 
