@@ -108,9 +108,9 @@ def post_process(out,gt,mask,idx,save_path):
         mask_np = (1 - mask[i]).mul(255).add_(0.5).clamp_(0, 255).permute(1, 2, 0).to('cpu', torch.uint8).numpy()
         fake_img_np = comp_im[i].mul(255).add_(0.5).clamp_(0, 255).permute(1, 2, 0).to('cpu', torch.uint8).numpy()
         masked_img_np, _ = get_transparent_mask(gt_img_np, mask_np)  #the input mask should be 1 for holes
-        Image.fromarray(masked_img_np).save(save_path + f'/{i + idx :0>5d}_im_masked.png')
-        Image.fromarray(gt_img_np).save(save_path + f'/{i + idx:0>5d}_im_truth.png')
-        Image.fromarray(fake_img_np).save(save_path + f'/{i + idx:0>5d}_im_out.png')
+        Image.fromarray(masked_img_np).save(save_path + f'/{i + idx :0>5d}_im_masked.jpg')
+        Image.fromarray(gt_img_np).save(save_path + f'/{i + idx:0>5d}_im_truth.jpg')
+        Image.fromarray(fake_img_np).save(save_path + f'/{i + idx:0>5d}_im_out.jpg')
 
     return comp_img_np
 
