@@ -80,7 +80,7 @@ Please refer to this link [lama](https://github.com/advimman/lama) for download 
 
 > Configure the accelerator
 
-We use the framework [accelerate](https://github.com/huggingface/accelerate) to speed up the training. Before starting trainging, you should specify a config file for it. Run the following command in terminal.
+We use the framework [accelerate](https://github.com/huggingface/accelerate) to speed up the training. Before starting training, you should specify a config file for it. Run the following command in terminal.
 
 ```shell
 accelerate config --config_file acc_config.yaml
